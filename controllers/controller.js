@@ -6,7 +6,11 @@ exports.getTopics = async (req, res) => {
 }
 
 exports.getArticle = async (req, res, next) => {
-    const id = req.params.article_id
+   try { const id = req.params.article_id
     const article = await getArticleModel(id)
-    res.status(200).send({article});
+    res.status(200).send({article});}
+    catch (err) {
+        console.log(err)
+        next(err)
+    }
 }

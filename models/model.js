@@ -9,6 +9,13 @@ exports.getTopicModels = () => {
 
 exports.getArticleModel = (id) => {
     return db.query(`SELECT * FROM articles WHERE article_id = $1`, [id]).then(({ rows }) => {
-        return rows[0];
+        const user = rows[0];
+      if (!user) {
+        return Promise.reject({
+          status: 404,
+          msg: `No user found for user_id: ${id}`,
+        });
+      }
+      return user;
       });
 }
