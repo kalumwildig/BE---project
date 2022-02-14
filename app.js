@@ -1,16 +1,20 @@
 const express = require('express')
-const {getTopics, getArticle} = require('./controllers/controller')
+const {getTopics, getArticle, patchArticle} = require('./controllers/controller')
 const {customError, PSQLErrors} = require('./controllers/errorcontroller')
 
 const app = express()
+app.use(express.json())
 
 //GETS
 app.get('/api/topics', getTopics);
 app.get('/api/articles/:article_id', getArticle)
 
 
+//PATCH'S
+app.patch('/api/articles/:article_id', patchArticle)
 
-//Errors
+
+//ERRORS
 app.all("/*", (req, res, next) => {
     res.status(404).send({ msg: "Path not found" });
   });
