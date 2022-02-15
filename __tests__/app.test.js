@@ -3,7 +3,6 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 const db = require("../db/connection");
-const { Test } = require("supertest");
 
 afterAll(() => db.end());
 
@@ -72,7 +71,7 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("PATCH: /api/articles/:article_id", () => {
-  test("Status 200; Should return the updated article", () => {
+  test("Status 200; Should return the updated article and work with negative numbers", () => {
     const update = { inc_votes: -12 };
 
     return request(app)
@@ -89,6 +88,25 @@ describe("PATCH: /api/articles/:article_id", () => {
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 88,
         });
+      });
+  });
+  test("Status 200; Should return the updated article and work with negative numbers", () => {
+    const update = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/articles/2")
+      .send(update)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+            article_id: 2,
+            title: "Sony Vaio; or, The Laptop",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+            created_at: "2020-10-16T05:03:00.000Z",
+            votes: 10,
+          },);
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -122,21 +140,3 @@ describe("PATCH: /api/articles/:article_id", () => {
       });
   });
 });
-
-// describe("Get /api/users", () => {
-//     test("should return an array of user objects, each of which should have a username property", () => {
-//       return request(app)
-//         .get("/api/users")
-//         .expect(200)
-//         .then(({ body: { users } }) => {
-//           expect(users).toHaveLength(4);
-//           users.forEach((element) => {
-//             expect(element).toEqual(
-//               expect.objectContaining({
-//                 username: expect.any(String),
-//               })
-//             );
-//           });
-//         });
-//     });
-// });
