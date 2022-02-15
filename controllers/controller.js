@@ -1,13 +1,14 @@
 const res = require("express/lib/response");
 const {
-  getTopicModels,
+  getTopicModel,
   getArticleModel,
   patchArticleModel,
-  getUserModels,
+  getUserModel,
+  getArticlesModel
 } = require("../models/model");
 
 exports.getTopics = async (req, res) => {
-  const topics = await getTopicModels();
+  const topics = await getTopicModel();
   res.status(200).send({ topics });
 };
 
@@ -33,6 +34,11 @@ exports.patchArticle = async (req, res, next) => {
 };
 
 exports.getUsers = async (req, res) => {
-  const users = await getUserModels();
+  const users = await getUserModel();
   res.status(200).send({ users });
 };
+
+exports.getArticles = async (req, res) => {
+    const articles = await getArticlesModel()
+    res.status(200).send({articles})
+}

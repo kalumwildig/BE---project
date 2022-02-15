@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const { idExist } = require("../util_funcs");
 
-exports.getTopicModels = () => {
+exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics`).then(({ rows }) => {
     return rows;
   });
@@ -26,9 +26,14 @@ exports.patchArticleModel = (id, body) => {
       });
 };
 
-exports.getUserModels = () => {
-    console.log('get here')
+exports.getUserModel = () => {
     return db.query(`SELECT username FROM users`).then(({ rows }) => {
+        return rows;
+      });
+}
+
+exports.getArticlesModel = () => {
+    return db.query(`SELECT * FROM articles`).then(({ rows }) => {
         return rows;
       });
 }
