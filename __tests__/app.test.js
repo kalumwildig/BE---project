@@ -49,7 +49,24 @@ describe("GET /api/articles/:article_id", () => {
           body: "I find this existence challenging",
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,
-          comment_count: 11
+          comment_count: 11,
+        });
+      });
+  });
+  test("Status 200: Responds with: Should return with an article object of the specified id and return 0 comments if there are no comments on that article ", () => {
+    return request(app)
+      .get("/api/articles/11")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual({
+        article_id: 11,
+          title: "Am I a cat?",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
+          created_at: "2020-01-15T22:21:00.000Z",
+          votes: 0,
+          comment_count: 0,
         });
       });
   });

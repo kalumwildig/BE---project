@@ -9,7 +9,7 @@ exports.getTopicModel = () => {
 
 exports.getArticleModel = (id) => {
   return db
-    .query(`SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a RIGHT JOIN comments c ON a.article_id = c.article_id WHERE a.article_id = $1 GROUP BY a.article_id;`, [id])
+    .query(`SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id WHERE a.article_id = $1 GROUP BY a.article_id;`, [id])
     .then(({ rows }) => {
       return idExist(rows, id);
     });
