@@ -123,20 +123,20 @@ describe("PATCH: /api/articles/:article_id", () => {
   });
 });
 
-// describe("Get /api/users", () => {
-//     test("should return an array of user objects, each of which should have a username property", () => {
-//       return request(app)
-//         .get("/api/users")
-//         .expect(200)
-//         .then(({ body: { users } }) => {
-//           expect(users).toHaveLength(4);
-//           users.forEach((element) => {
-//             expect(element).toEqual(
-//               expect.objectContaining({
-//                 username: expect.any(String),
-//               })
-//             );
-//           });
-//         });
-//     });
-// });
+describe("Get /api/users", () => {
+    test("should return an array of user objects, each of which should have a username property", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users).toHaveLength(4);
+          users.forEach((element) => {
+            expect(element).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+});
