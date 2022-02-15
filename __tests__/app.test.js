@@ -9,7 +9,7 @@ afterAll(() => db.end());
 beforeEach(() => seed(data));
 
 describe("Get /api/topics", () => {
-  test("should return an array of topic objects, each of which should have a slug and description property", () => {
+  test("Status 200: Should return an array of topic objects, each of which should have a slug and description property", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -25,7 +25,7 @@ describe("Get /api/topics", () => {
         });
       });
   });
-  test("Status 400: should return a 400 when the path specified is not found", () => {
+  test("Status 400: Should return a 400 when the path specified is not found", () => {
     return request(app)
       .get("/api/bad-path")
       .expect(404)
@@ -49,6 +49,24 @@ describe("GET /api/articles/:article_id", () => {
           body: "I find this existence challenging",
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,
+          comment_count: 11,
+        });
+      });
+  });
+  test("Status 200: Responds with: Should return with an article object of the specified id and return 0 comments if there are no comments on that article ", () => {
+    return request(app)
+      .get("/api/articles/11")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual({
+        article_id: 11,
+          title: "Am I a cat?",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
+          created_at: "2020-01-15T22:21:00.000Z",
+          votes: 0,
+          comment_count: 0,
         });
       });
   });
@@ -137,6 +155,47 @@ describe("PATCH: /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("This is a bad request");
+      });
+  });
+});
+
+describe("Get /api/users", () => {
+  test("Status 200: Should return an array of user objects, each of which should have a username property", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        users.forEach((element) => {
+          expect(element).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+describe("Get /api/articles", () => {
+  test("Status 200: Should return an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(12);
+        articles.forEach((element) => {
+          expect(element).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+            })
+          );
+        });
       });
   });
 });
