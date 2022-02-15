@@ -3,7 +3,7 @@ exports.idExist = (rows, id) => {
   if (!results) {
     return Promise.reject({
       status: 404,
-      msg: `No user found for user_id: ${id}`,
+      msg: `No ID found for: ${id}`,
     });
   }
   return results;
