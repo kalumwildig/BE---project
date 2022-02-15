@@ -33,7 +33,7 @@ exports.getUserModel = () => {
 }
 
 exports.getArticlesModel = () => {
-    return db.query(`SELECT * FROM articles;`).then(({ rows }) => {
+    return db.query(`SELECT * FROM articles ORDER BY created_at DESC;`).then(({ rows }) => {
         return rows;
       });
 }

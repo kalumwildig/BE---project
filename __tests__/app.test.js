@@ -75,7 +75,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/100000394")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No user found for user_id: 100000394");
+        expect(body.msg).toBe("No ID found for: 100000394");
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -125,7 +125,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       .send(update2)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No user found for user_id: 542561631");
+        expect(body.msg).toBe("No ID found for: 542561631");
       });
   });
   test("Status 400: Responds with an error and a message when not a non number is sent to update the votes total", () => {
@@ -164,6 +164,8 @@ describe("Get /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy('created_at',  {
+            descending: true});
         expect(articles).toHaveLength(12);
         articles.forEach((element) => {
           expect(element).toEqual(
@@ -179,4 +181,10 @@ describe("Get /api/articles", () => {
         });
       });
   });
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+    test('Status 200: Should rean array of comments for the given article_id', () => {
+        
+    });
 });
