@@ -9,7 +9,7 @@ afterAll(() => db.end());
 beforeEach(() => seed(data));
 
 describe("Get /api/topics", () => {
-  test("should return an array of topic objects, each of which should have a slug and description property", () => {
+  test("Status 200: Should return an array of topic objects, each of which should have a slug and description property", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -25,7 +25,7 @@ describe("Get /api/topics", () => {
         });
       });
   });
-  test("Status 400: should return a 400 when the path specified is not found", () => {
+  test("Status 400: Should return a 400 when the path specified is not found", () => {
     return request(app)
       .get("/api/bad-path")
       .expect(404)
@@ -64,8 +64,102 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/invalid_id")
       .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("This is a bad request");
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
       });
   });
+});
+
+describe("PATCH: /api/articles/:article_id", () => {
+  test("Status 200; Should return the updated article", () => {
+    const update = { inc_votes: -12 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(update)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 88,
+        });
+      });
+  });
+  test("Status 400: Responds with an error and a message when not an id is passed", () => {
+    const update2 = { inc_votes: -5 };
+    return request(app)
+      .patch("/api/articles/invalid_id")
+      .send(update2)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
+      });
+  });
+  test("Status 404: Responds with an error and a message when an invalid id or an id that does not exist is passed", () => {
+    const update2 = { inc_votes: -5 };
+    return request(app)
+      .patch("/api/articles/542561631")
+      .send(update2)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No user found for user_id: 542561631");
+      });
+  });
+  test("Status 400: Responds with an error and a message when not a non number is sent to update the votes total", () => {
+    const update3 = { inc_votes: "not a number" };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(update3)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
+      });
+  });
+});
+
+describe("Get /api/users", () => {
+    test("Status 200: Should return an array of user objects, each of which should have a username property", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users).toHaveLength(4);
+          users.forEach((element) => {
+            expect(element).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+});
+
+describe("Get /api/articles", () => {
+    test("Status 200: Should return an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          articles.forEach((element) => {
+            expect(element).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+
+              })
+            );
+          });
+        });
+    });
 });
