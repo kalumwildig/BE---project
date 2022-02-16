@@ -1,16 +1,8 @@
 const db = require("./db/connection");
 
-exports.idExist = async (rows, id) => {
-  const articleID = await this.articleIDExists(id);
-  const modelResults = rows;
-  if (modelResults.length === 0 && articleID.length === 0) {
-    return Promise.reject({
-      status: 404,
-      msg: `No ID found for: ${id}`,
-    });
-  }
-
-  return modelResults.length === 1 ? modelResults[0] : modelResults;
+exports.idExistReturnsObject = async (rows, id) => {
+    const modelResults = await this.checkIDExistWithResultsReturnsArray(rows, id)
+  return modelResults[0];
 };
 
 exports.articleIDExists = async (id) => {
@@ -20,3 +12,15 @@ exports.articleIDExists = async (id) => {
   ); 
   return result.rows;
 };
+
+exports.checkIDExistWithResultsReturnsArray = async (rows, id) => {
+    const articleID = await this.articleIDExists(id);
+    const modelResults = rows
+    if (articleID.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: `Article ID does not exist for: ${id}`,
+          });
+    }
+    return modelResults
+}

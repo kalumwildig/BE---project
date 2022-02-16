@@ -75,7 +75,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/100000394")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No ID found for: 100000394");
+        expect(body.msg).toBe("Article ID does not exist for: 100000394");
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -125,7 +125,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       .send(update2)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No ID found for: 542561631");
+        expect(body.msg).toBe("Article ID does not exist for: 542561631");
       });
   });
   test("Status 400: Responds with an error and a message when not a non number is sent to update the votes total", () => {
@@ -159,7 +159,7 @@ describe("GET /api/users", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("Status 200: Should return an array of article objects", () => {
+  test("Status 200: Should return an array of article objects ordered by created_at desc", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -209,7 +209,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/100000394/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No ID found for: 100000394");
+        expect(body.msg).toBe("Article ID does not exist for: 100000394");
       });
   });
   test("Status 200: Should return an empty array if no comments exist for that article", () => {
