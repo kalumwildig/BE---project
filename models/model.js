@@ -45,6 +45,7 @@ exports.getArticlesModel = () => {
     });
 };
 
+
 exports.getArticleCommentsModel = (id) => {
   return db
     .query(
