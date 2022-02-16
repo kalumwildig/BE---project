@@ -4,7 +4,8 @@ const {
   patchArticleModel,
   getUserModel,
   getArticlesModel,
-  getArticleCommentsModel
+  getArticleCommentsModel,
+  postCommentModel,
 } = require("../models/model");
 
 exports.getTopics = async (req, res) => {
@@ -39,15 +40,27 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getArticles = async (req, res) => {
-    const articles = await getArticlesModel()
-    res.status(200).send({articles})
-}
+  const articles = await getArticlesModel();
+  res.status(200).send({ articles });
+};
 
 exports.getArticleComments = async (req, res, next) => {
-   try { const id = req.params.article_id
-    const comments = await getArticleCommentsModel(id)
-    res.status(200).send({comments})}
-    catch (err) {
-        next(err)
-    }
-}
+  try {
+    const id = req.params.article_id;
+    const comments = await getArticleCommentsModel(id);
+    res.status(200).send({ comments });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postComment = async (req, res, next) => {
+  try {
+    const commentToAdd = req.body.body;
+    const id = req.params.article_id;
+    const comment = await postCommentModel(commentToAdd, id);
+    res.status(201).send({comment})
+  } catch (err) {
+    next(err);
+  }
+};

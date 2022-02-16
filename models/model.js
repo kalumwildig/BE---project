@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const {checkIDExistWithResultsReturnsArray, idExistReturnsObject } = require("../util_funcs");
+const {checkIDExistWithResultsReturnsArray, idExistReturnsObject, articleIDExists, idExistReturnsString } = require("../util_funcs");
 
 exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
@@ -56,3 +56,17 @@ exports.getArticleCommentsModel = (id) => {
       return checkIDExistWithResultsReturnsArray(rows, id);
     });
 };
+
+exports.postCommentModel = async (comment, id) => {
+    const results = await articleIDExists(id) ;
+    if (results.length === 0) { return Promise.reject({
+        status: 404,
+        msg: `Article ID does not exist for: ${id}`,
+      }); }
+    else {
+    const [{author}] = results 
+    const insert = [comment, author ,id];
+    return db.query(`INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`, insert).then(({rows}) => {
+        return idExistReturnsString(rows, id)
+    } )}
+}

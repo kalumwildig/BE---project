@@ -117,14 +117,14 @@ describe("PATCH: /api/articles/:article_id", () => {
       .expect(201)
       .then(({ body }) => {
         expect(body.article).toEqual({
-            article_id: 2,
-            title: "Sony Vaio; or, The Laptop",
-            topic: "mitch",
-            author: "icellusedkars",
-            body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
-            created_at: "2020-10-16T05:03:00.000Z",
-            votes: 10,
-          },);
+          article_id: 2,
+          title: "Sony Vaio; or, The Laptop",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+          created_at: "2020-10-16T05:03:00.000Z",
+          votes: 10,
+        });
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -137,7 +137,7 @@ describe("PATCH: /api/articles/:article_id", () => {
         expect(body.msg).toBe("This is a bad request");
       });
   });
-  test("Status 404: Responds with an error and a message when an invalid id or an id that does not exist is passed", () => {
+  test("Status 404: Responds with an error and a message when an id that does not exist is passed", () => {
     const update2 = { inc_votes: -5 };
     return request(app)
       .patch("/api/articles/542561631")
@@ -196,7 +196,7 @@ describe("GET /api/articles", () => {
               topic: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-              comment_count: expect.any(Number)
+              comment_count: expect.any(Number),
             })
           );
         });
@@ -238,7 +238,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toHaveLength(0);
-        expect(comments).toEqual([])
+        expect(comments).toEqual([]);
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -249,4 +249,37 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("This is a bad request");
       });
   });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Status 201: Should POST a comment to the comments table and then return the comment", () => {
+    const comment = { username: "rogersop", body: "This is a test comment" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toBe("This is a test comment");
+      });
+  });
+  test("Status 400: Responds with an error and a message when not an id is passed", () => {
+    const comment = { username: "rogersop", body: "This is a test comment" };
+    return request(app)
+      .post("/api/articles/invalid-id/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
+      });
+  });
+  test("Status 404: Responds with an error and a message when an invalid id or an id that does not exist is passed", () => {
+    const comment = { username: "rogersop", body: "This is a test comment" };
+    return request(app)
+      .post("/api/articles/100000394/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article ID does not exist for: 100000394");
+      });
+    });
 });
