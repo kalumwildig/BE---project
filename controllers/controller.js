@@ -3,7 +3,8 @@ const {
   getArticleModel,
   patchArticleModel,
   getUserModel,
-  getArticlesModel
+  getArticlesModel,
+  getArticleCommentsModel
 } = require("../models/model");
 
 exports.getTopics = async (req, res) => {
@@ -40,4 +41,13 @@ exports.getUsers = async (req, res) => {
 exports.getArticles = async (req, res) => {
     const articles = await getArticlesModel()
     res.status(200).send({articles})
+}
+
+exports.getArticleComments = async (req, res, next) => {
+   try { const id = req.params.article_id
+    const comments = await getArticleCommentsModel(id)
+    res.status(200).send({comments})}
+    catch (err) {
+        next(err)
+    }
 }

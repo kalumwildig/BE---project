@@ -8,7 +8,7 @@ afterAll(() => db.end());
 
 beforeEach(() => seed(data));
 
-describe("Get /api/topics", () => {
+describe("GET /api/topics", () => {
   test("Status 200: Should return an array of topic objects, each of which should have a slug and description property", () => {
     return request(app)
       .get("/api/topics")
@@ -59,7 +59,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body: { article } }) => {
         expect(article).toEqual({
-        article_id: 11,
+          article_id: 11,
           title: "Am I a cat?",
           topic: "mitch",
           author: "icellusedkars",
@@ -140,7 +140,7 @@ describe("PATCH: /api/articles/:article_id", () => {
   });
 });
 
-describe("Get /api/users", () => {
+describe("GET /api/users", () => {
   test("Status 200: Should return an array of user objects, each of which should have a username property", () => {
     return request(app)
       .get("/api/users")
@@ -158,14 +158,15 @@ describe("Get /api/users", () => {
   });
 });
 
-describe("Get /api/articles", () => {
+describe("GET /api/articles", () => {
   test("Status 200: Should return an array of article objects", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeSortedBy('created_at',  {
-            descending: true});
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
         expect(articles).toHaveLength(12);
         articles.forEach((element) => {
           expect(element).toEqual(
@@ -183,8 +184,49 @@ describe("Get /api/articles", () => {
   });
 });
 
-describe('GET /api/articles/:article_id/comments', () => {
-    test('Status 200: Should rean array of comments for the given article_id', () => {
-        
-    });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("Status 200: Should return array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(2);
+        comments.forEach((element) => {
+          expect(element).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("Status 404: Responds with an error and a message when an invalid id or an id that does not exist is passed", () => {
+    return request(app)
+      .get("/api/articles/100000394/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No ID found for: 100000394");
+      });
+  });
+  test("Status 200: Should return an empty array if no comments exist for that article", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(0);
+        expect(comments).toEqual([])
+      });
+  });
+  test("Status 400: Responds with an error and a message when not an id is passed", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
+      });
+  });
 });

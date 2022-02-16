@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { idExist } = require("../util_funcs");
+const { idExist, articleIDExists  } = require("../util_funcs");
 
 exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
@@ -35,5 +35,11 @@ exports.getUserModel = () => {
 exports.getArticlesModel = () => {
     return db.query(`SELECT * FROM articles ORDER BY created_at DESC;`).then(({ rows }) => {
         return rows;
+      });
+}
+
+exports.getArticleCommentsModel = (id) => {
+    return db.query(`SELECT comment_id, body, votes, author, created_at FROM comments WHERE article_id = $1;`, [id]).then(({ rows }) => {
+        return idExist(rows, id);
       });
 }
