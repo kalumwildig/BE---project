@@ -33,7 +33,7 @@ exports.getUserModel = () => {
 }
 
 exports.getArticlesModel = () => {
-    return db.query(`SELECT * FROM articles ORDER BY created_at DESC;`).then(({ rows }) => {
+    return db.query(`SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id GROUP BY a.article_id ORDER BY a.created_at DESC;`).then(({ rows }) => {
         return rows;
       });
 }
