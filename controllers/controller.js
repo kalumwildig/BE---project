@@ -61,7 +61,7 @@ exports.getArticleComments = async (req, res, next) => {
 
 exports.deleteComment = async (req, res, next) => {
    try { const id = req.params.comment_id
-    await Promise.all([getCommentModel(id),deleteCommentModel(id)])
+  await deleteCommentModel(id)
    res.sendStatus(204)
    }
    catch (err) {

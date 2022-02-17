@@ -5,7 +5,6 @@ exports.customError = (err, req, res, next) => {
 };
 
 exports.PSQLErrors = (err, req, res, next) => {
-  console.log(err)
   if ((err.code = "22P02")) {
     res.status(400).send({ msg: "This is a bad request" });
   } else next(err);

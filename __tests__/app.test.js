@@ -261,6 +261,11 @@ describe('DELETE /api/comments/:comment_id', () => {
             expect(body.msg).toBe("No comment exists for: 1539256");
           });
     });
+    test('Status 400: Responds with an error if the comment passed is not a number', () => {
+      return request(app).delete("/api/comments/notanid").expect(400).then(({ body }) => {
+          expect(body.msg).toBe("This is a bad request");
+        });
+  });
   });
 
 describe("POST /api/articles/:article_id/comments", () => {
