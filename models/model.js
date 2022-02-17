@@ -1,7 +1,6 @@
 const db = require("../db/connection");
-const {
-  doRowsExist,
-} = require("../util_funcs");
+const {doRowsExist} = require("../util_funcs");
+const file = require('../endpoints.json')
 
 exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
@@ -75,3 +74,6 @@ exports.postCommentModel = async (data, id, author) => {
     return Promise.reject((err.code = "22P02"));
   }
 
+exports.getEndpointsModel = async () => {
+    return JSON.stringify(file);
+}
