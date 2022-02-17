@@ -4,7 +4,9 @@ const {
   patchArticleModel,
   getUserModel,
   getArticlesModel,
-  getArticleCommentsModel
+  getArticleCommentsModel,
+  deleteCommentModel,
+  getCommentModel
 } = require("../models/model");
 
 exports.getTopics = async (req, res) => {
@@ -50,4 +52,15 @@ exports.getArticleComments = async (req, res, next) => {
     catch (err) {
         next(err)
     }
+}
+
+exports.deleteComment = async (req, res, next) => {
+   try { const id = req.params.comment_id
+    await Promise.all([getCommentModel(id),deleteCommentModel(id)])
+   res.sendStatus(204)
+   }
+   catch (err) {
+       console.log(err)
+       next(err)
+   }
 }

@@ -250,3 +250,14 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe.only('DELETE /api/comments/:comment_id', () => {
+    test('Status 204: Should delete the comment specified by ID', () => {
+        return request(app).delete("/api/comments/1").expect(204);
+    });
+    test('Status 404: Responds with an error if the comment does not already exist', () => {
+        return request(app).delete("/api/comments/1539256").expect(404).then(({ body }) => {
+            expect(body.msg).toBe("No comment exists for: 1539256");
+          });
+    });
+});

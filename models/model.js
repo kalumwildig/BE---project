@@ -56,3 +56,24 @@ exports.getArticleCommentsModel = (id) => {
       return checkIDExistWithResultsReturnsArray(rows, id);
     });
 };
+
+exports.deleteCommentModel = (id) => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [id])
+}
+
+
+exports.getCommentModel = (id) => {
+    return db
+    .query(
+      `SELECT comment_id, body, votes, author, created_at FROM comments WHERE comment_id = $1;`,
+      [id]
+    ).then(({ rows }) => {
+        if (rows.length == 0){
+            Promise.reject({
+                status: 404,
+                msg: `Article ID does not exist for: ${id}`,
+              })
+        }
+        return rows
+      });
+}
