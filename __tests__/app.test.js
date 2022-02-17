@@ -282,4 +282,14 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Article ID does not exist for: 100000394");
       });
     });
+    test("Status 400: Responds with an error and a message when invalid data is sent via the object", () => {
+        const comment = { test1: 1, test2: 10 };
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send(comment)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("This is a bad request");
+          });
+      });
 });

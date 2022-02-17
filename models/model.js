@@ -1,5 +1,11 @@
 const db = require("../db/connection");
-const {checkIDExistWithResultsReturnsArray, idExistReturnsObject, articleIDExists, idExistReturnsString } = require("../util_funcs");
+const {
+  checkIDExistWithResultsReturnsArray,
+  idExistReturnsObject,
+  articleIDExists,
+  idExistReturnsString,
+  rejectPromiseMessage,
+} = require("../util_funcs");
 
 exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
@@ -45,7 +51,6 @@ exports.getArticlesModel = () => {
     });
 };
 
-
 exports.getArticleCommentsModel = (id) => {
   return db
     .query(
@@ -57,16 +62,25 @@ exports.getArticleCommentsModel = (id) => {
     });
 };
 
-exports.postCommentModel = async (comment, id) => {
-    const results = await articleIDExists(id) ;
-    if (results.length === 0) { return Promise.reject({
-        status: 404,
-        msg: `Article ID does not exist for: ${id}`,
-      }); }
-    else {
-    const [{author}] = results 
-    const insert = [comment, author ,id];
-    return db.query(`INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`, insert).then(({rows}) => {
-        return idExistReturnsString(rows, id)
-    } )}
-}
+exports.postCommentModel = async (data, id) => {
+  const results = await articleIDExists(id);
+  if (results.length === 0) {
+    return rejectPromiseMessage(id);
+  } else {
+    const check = Object.keys(data);
+    if (check[0] == "username" && check[1] == "body") {
+      const comment = data.body;
+      const [{ author }] = results;
+      const insert = [comment, author, id];
+      return db
+        .query(
+          `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+          insert
+        )
+        .then(({ rows }) => {
+          return rows[0].body
+        });
+    }
+    return Promise.reject((err.code = "22P02"));
+  }
+};
