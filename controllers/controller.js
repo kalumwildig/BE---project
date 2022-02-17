@@ -5,10 +5,9 @@ const {
   getUserModel,
   getArticlesModel,
   getArticleCommentsModel,
-
   deleteCommentModel,
-  getCommentModel
-  postCommentModel,
+  getCommentModel,
+  postCommentModel
 } = require("../models/model");
 
 exports.getTopics = async (req, res) => {

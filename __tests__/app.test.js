@@ -261,6 +261,7 @@ describe('DELETE /api/comments/:comment_id', () => {
             expect(body.msg).toBe("No comment exists for: 1539256");
           });
     });
+  });
 
 describe("POST /api/articles/:article_id/comments", () => {
   test("Status 201: Should POST a comment to the comments table and then return the comment", () => {
@@ -303,5 +304,4 @@ describe("POST /api/articles/:article_id/comments", () => {
             expect(body.msg).toBe("This is a bad request");
           });
       });
-
-});
+    });
