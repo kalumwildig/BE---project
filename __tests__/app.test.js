@@ -137,7 +137,7 @@ describe("PATCH: /api/articles/:article_id", () => {
         expect(body.msg).toBe("This is a bad request");
       });
   });
-  test("Status 404: Responds with an error and a message when an invalid id or an id that does not exist is passed", () => {
+  test("Status 404: Responds with an error and a message when an id that does not exist is passed", () => {
     const update2 = { inc_votes: -5 };
     return request(app)
       .patch("/api/articles/542561631")
@@ -340,4 +340,47 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("This is a bad request");
       });
   });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Status 201: Should POST a comment to the comments table and then return the comment", () => {
+    const comment = { username: "rogersop", body: "This is a test comment" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toBe("This is a test comment");
+      });
+  });
+  test("Status 400: Responds with an error and a message when not an id is passed", () => {
+    const comment = { username: "rogersop", body: "This is a test comment" };
+    return request(app)
+      .post("/api/articles/invalid-id/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
+      });
+  });
+  test("Status 404: Responds with an error and a message when an invalid id or an id that does not exist is passed", () => {
+    const comment = { username: "rogersop", body: "This is a test comment" };
+    return request(app)
+      .post("/api/articles/100000394/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article ID does not exist for: 100000394");
+      });
+    });
+    test("Status 400: Responds with an error and a message when invalid data is sent via the object", () => {
+        const comment = { test1: 1, test2: 10 };
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send(comment)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("This is a bad request");
+          });
+      });
 });

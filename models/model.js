@@ -1,7 +1,5 @@
 const db = require("../db/connection");
-const {
-  checkIDExistWithResultsReturnsArray,
-  idExistReturnsObject,
+const {doRowsExist,
 } = require("../util_funcs");
 
 exports.getTopicModel = () => {
@@ -17,7 +15,7 @@ exports.getArticleModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      return idExistReturnsObject(rows, id);
+      return doRowsExist(rows, id)
     });
 };
 
@@ -28,7 +26,7 @@ exports.patchArticleModel = (id, body) => {
       [body.inc_votes, id]
     )
     .then(({ rows }) => {
-      return idExistReturnsObject(rows, id);
+        return rows[0]
     });
 };
 
@@ -79,6 +77,24 @@ exports.getArticleCommentsModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      return checkIDExistWithResultsReturnsArray(rows, id);
-    });
+        return rows
+   });
 };
+
+exports.postCommentModel = async (data, id, author) => {
+    const check = Object.keys(data);
+    if (check[0] == "username" && check[1] == "body") {
+      const comment = data.body;
+      const insert = [comment, author, id];
+      return db
+        .query(
+          `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+          insert
+        )
+        .then(({ rows }) => {
+          return rows[0].body
+        });
+    }
+    return Promise.reject((err.code = "22P02"));
+  }
+
