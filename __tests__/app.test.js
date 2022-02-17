@@ -178,7 +178,7 @@ describe("GET /api/users", () => {
 });
 
 describe.only("GET /api/articles (updated to consider queries)", () => {
-  test("Status 200: Should return an array of article objects default ordered by created_at desc", () => {
+  test("Status 200: Should return an array of article objects default ordered by created_at desc, when no sort_by, order or topic are passed", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -225,6 +225,15 @@ describe.only("GET /api/articles (updated to consider queries)", () => {
           );
         });
       });
+    })
+      test('Status 200: Should return an empty array when a topic is passed that does not exist', () => {
+        return request(app)
+        .get("/api/articles?sort_by=title&order=asc&topic=shouldntexist")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles).toEqual([])
+        }
+      );
   });
   test("Status 400: Responds with an error when invalid order by is passed", () => {
     return request(app)
@@ -256,7 +265,35 @@ describe.only("GET /api/articles (updated to consider queries)", () => {
         });
       });
   });
+  test("Status 200: Should return articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc&topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(2);
+        expect(articles).toEqual([{
+            article_id: 9,
+            title: "They're not exactly dogs, are they?",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "Well? Think about it.",
+            created_at: "2020-06-06T09:10:00.000Z",
+            votes: 0,
+            comment_count: 2
+          },{
+            article_id: 5,
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            topic: "cats",
+            author: "rogersop",
+            body: "Bastet walks amongst us, and the cats are taking arms!",
+            created_at: "2020-08-03T13:14:00.000Z",
+            votes: 0,
+            comment_count: 2
+          }])
+      });
+  });
 });
+
 
 describe("GET /api/articles/:article_id/comments", () => {
   test("Status 200: Should return array of comments for the given article_id", () => {
