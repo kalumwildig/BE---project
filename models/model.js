@@ -68,6 +68,13 @@ exports.getArticlesModel = (sort_by = "created_at", order = "DESC", topic) => {
   }
   query += ` GROUP BY a.article_id ORDER BY a.${sort_by} ${order};`;
   return db.query(query).then(({ rows }) => {
+    if (rows.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: "This topic does not exist",
+          });
+    }
+    
     return rows;
   });
 };

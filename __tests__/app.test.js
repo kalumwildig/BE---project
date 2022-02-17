@@ -177,7 +177,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe.only("GET /api/articles (updated to consider queries)", () => {
+describe("GET /api/articles (updated to consider queries)", () => {
   test("Status 200: Should return an array of article objects default ordered by created_at desc, when no sort_by, order or topic are passed", () => {
     return request(app)
       .get("/api/articles")
@@ -226,12 +226,12 @@ describe.only("GET /api/articles (updated to consider queries)", () => {
         });
       });
     })
-      test('Status 200: Should return an empty array when a topic is passed that does not exist', () => {
+      test('Status 404: Should return an empty array when a topic is passed that does not exist', () => {
         return request(app)
         .get("/api/articles?sort_by=title&order=asc&topic=shouldntexist")
-        .expect(200)
-        .then(({ body: { articles } }) => {
-            expect(articles).toEqual([])
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual('This topic does not exist')
         }
       );
   });
