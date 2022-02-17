@@ -35,10 +35,14 @@ exports.getUserModel = () => {
   });
 };
 
-exports.getArticlesModel = () => {
-  return db
+exports.getArticlesModel = (sort_by = 'created_at', order = 'DESC') => {
+  const fieldOptions = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']
+  const orderBy = ['ASC', 'DESC']
+  if (!fieldOptions.includes(sort_by.toLowerCase())) {return Promise.reject({ status: 400, msg: "Invalid sort by argument. This is a bad request" })};
+  if (!orderBy.includes(order.toUpperCase())) {return Promise.reject({ status: 400, msg: "Invalid order argument. This is a bad request" })};
+    return db
     .query(
-      `SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id GROUP BY a.article_id ORDER BY a.created_at DESC;`
+      `SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id GROUP BY a.article_id ORDER BY a.${sort_by} ${order};`
     )
     .then(({ rows }) => {
       return rows;

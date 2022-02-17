@@ -117,14 +117,14 @@ describe("PATCH: /api/articles/:article_id", () => {
       .expect(201)
       .then(({ body }) => {
         expect(body.article).toEqual({
-            article_id: 2,
-            title: "Sony Vaio; or, The Laptop",
-            topic: "mitch",
-            author: "icellusedkars",
-            body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
-            created_at: "2020-10-16T05:03:00.000Z",
-            votes: 10,
-          },);
+          article_id: 2,
+          title: "Sony Vaio; or, The Laptop",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+          created_at: "2020-10-16T05:03:00.000Z",
+          votes: 10,
+        });
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -177,8 +177,8 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles", () => {
-  test("Status 200: Should return an array of article objects ordered by created_at desc", () => {
+describe.only("GET /api/articles (updated to consider queries)", () => {
+  test("Status 200: Should return an array of article objects default ordered by created_at desc", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -196,9 +196,63 @@ describe("GET /api/articles", () => {
               topic: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-              comment_count: expect.any(Number)
+              comment_count: expect.any(Number),
             })
           );
+        });
+      });
+  });
+  test("Status 200: Should return articles that can be passed sort_by and ordered_by arguments", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", {
+          ascending: true,
+        });
+        expect(articles).toHaveLength(12);
+        articles.forEach((element) => {
+          expect(element).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("Status 400: Responds with an error when invalid order by is passed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.msg).toBe("Invalid order argument. This is a bad request");
+      });
+  });
+  test("Status 400: Responds with an error when invalid sort by is passed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=testx&order=asc")
+      .expect(400)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.msg).toBe(
+          "Invalid sort by argument. This is a bad request"
+        );
+      });
+  });
+  test("Status 200: Should return articles with default if sort_by or order queries are misspelt etc.", () => {
+    return request(app)
+      .get("/api/articles?sor=title&ordr=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
         });
       });
   });
@@ -238,7 +292,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toHaveLength(0);
-        expect(comments).toEqual([])
+        expect(comments).toEqual([]);
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
