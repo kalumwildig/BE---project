@@ -1,10 +1,6 @@
 const db = require("../db/connection");
 const {
-  checkIDExistWithResultsReturnsArray,
-  idExistReturnsObject,
-  articleIDExists,
-  idExistReturnsString,
-  rejectPromiseMessage,
+  doRowsExist,
 } = require("../util_funcs");
 
 exports.getTopicModel = () => {
@@ -20,7 +16,7 @@ exports.getArticleModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      return idExistReturnsObject(rows, id);
+      return doRowsExist(rows, id)
     });
 };
 
@@ -31,7 +27,7 @@ exports.patchArticleModel = (id, body) => {
       [body.inc_votes, id]
     )
     .then(({ rows }) => {
-      return idExistReturnsObject(rows, id);
+        return rows[0]
     });
 };
 
@@ -58,19 +54,14 @@ exports.getArticleCommentsModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      return checkIDExistWithResultsReturnsArray(rows, id);
-    });
+        return rows
+   });
 };
 
-exports.postCommentModel = async (data, id) => {
-  const results = await articleIDExists(id);
-  if (results.length === 0) {
-    return rejectPromiseMessage(id);
-  } else {
+exports.postCommentModel = async (data, id, author) => {
     const check = Object.keys(data);
     if (check[0] == "username" && check[1] == "body") {
       const comment = data.body;
-      const [{ author }] = results;
       const insert = [comment, author, id];
       return db
         .query(
@@ -83,4 +74,4 @@ exports.postCommentModel = async (data, id) => {
     }
     return Promise.reject((err.code = "22P02"));
   }
-};
+
