@@ -4,7 +4,8 @@ const {
   patchArticleModel,
   getUserModel,
   getArticlesModel,
-  getArticleCommentsModel
+  getArticleCommentsModel,
+  postCommentModel,
 } = require("../models/model");
 
 exports.getTopics = async (req, res) => {
@@ -26,7 +27,8 @@ exports.patchArticle = async (req, res, next) => {
   try {
     const body = req.body;
     const id = req.params.article_id;
-    const article = await patchArticleModel(id, body);
+    const outcome = await Promise.all([getArticleModel(id) ,patchArticleModel(id, body)])
+    const article = outcome[1]
     res.status(201).send({ article });
   } catch (err) {
     next(err);
@@ -39,15 +41,29 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getArticles = async (req, res) => {
-    const articles = await getArticlesModel()
-    res.status(200).send({articles})
-}
+  const articles = await getArticlesModel();
+  res.status(200).send({ articles });
+};
 
 exports.getArticleComments = async (req, res, next) => {
-   try { const id = req.params.article_id
-    const comments = await getArticleCommentsModel(id)
-    res.status(200).send({comments})}
-    catch (err) {
-        next(err)
-    }
-}
+  try {
+    const id = req.params.article_id;
+    const outcome = await Promise.all([getArticleModel(id), getArticleCommentsModel(id)])
+    const comments = outcome[1]
+    res.status(200).send({ comments });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postComment = async (req, res, next) => {
+  try {
+    const commentToAdd = req.body;
+    const id = req.params.article_id;
+    const {author} = await getArticleModel(id)
+    const comment = await postCommentModel(commentToAdd, id, author)
+    res.status(201).send({comment})
+  } catch (err) {
+    next(err);
+  }
+};
