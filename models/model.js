@@ -75,5 +75,5 @@ exports.postCommentModel = async (data, id, author) => {
   }
 
 exports.getEndpointsModel = async () => {
-    return JSON.stringify(file);
+    return file;
 }

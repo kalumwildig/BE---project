@@ -1,4 +1,3 @@
-const res = require("express/lib/response");
 const {
   getTopicModel,
   getArticleModel,
@@ -9,6 +8,7 @@ const {
   postCommentModel,
   getEndpointsModel
 } = require("../models/model");
+
 
 exports.getTopics = async (req, res) => {
   const topics = await getTopicModel();
@@ -70,12 +70,11 @@ exports.postComment = async (req, res, next) => {
   }
 };
 
-exports.getEndpoints = async () => {
-   try { const endpoint =  await getEndpointsModel()
-    const endpoints = JSON.parse(endpoint)
-    console.log(endpoints)
+exports.getEndpoints = async (req, res) => {
+   try { 
+    const endpoints = await getEndpointsModel()
     res.status(200).send({endpoints})}
     catch (err) {
-        console.log(err)
+        next(err)
     }
 }

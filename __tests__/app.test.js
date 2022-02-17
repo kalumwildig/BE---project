@@ -300,7 +300,8 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        console.log(endpoints);
+        console.log(endpoints)
+        expect(typeof endpoints).toBe('object')
       });
   });
 });
