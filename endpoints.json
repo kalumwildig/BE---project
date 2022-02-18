@@ -67,6 +67,7 @@
   "PATCH /api/articles/:article_id": {
     "description": "updates the votes for a given article id and serves an object of the updated article ID",
     "queries": [],
+    "exampleRequest": { "inc_votes": -12 },
     "exampleResponse": {
       "article": {
         "article_id": 1,
@@ -82,6 +83,7 @@
   "POST /api/articles/:article_id/comments": {
     "description": "inserts a comment for a given article id and serves a string of the added comment",
     "queries": [],
+    "exampleRequest": { "username": "rogersop", "body": "This is a test comment" },
     "exampleResponse": {
       "comment": "This is an example response."
     }

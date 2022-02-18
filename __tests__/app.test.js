@@ -407,7 +407,6 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body: { endpoints } }) => {
         expect(typeof endpoints).toBe('object')
-        expect(Object.keys(endpoints)).toHaveLength(8)
       });
   });
 });
