@@ -71,10 +71,7 @@ exports.postComment = async (req, res, next) => {
 };
 
 exports.getEndpoints = async (req, res) => {
-   try { 
     const endpoints = await getEndpointsModel()
-    res.status(200).send({endpoints})}
-    catch (err) {
-        next(err)
-    }
+    res.status(200).send({endpoints})
+
 }
