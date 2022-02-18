@@ -115,7 +115,7 @@ exports.postCommentModel = async (data, id, author) => {
         insert
       )
       .then(({ rows }) => {
-        return rows[0].body;
+        return rows[0];
       });
   }
     return Promise.reject({ status: 400, msg: "This is a bad request" });

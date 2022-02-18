@@ -365,7 +365,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(comment)
       .expect(201)
       .then(({ body: { comment } }) => {
-        expect(comment).toBe("This is a test comment");
+        expect(comment.body).toBe('This is a test comment');
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {

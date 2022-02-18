@@ -84,8 +84,13 @@
     "description": "inserts a comment for a given article id and serves a string of the added comment",
     "queries": [],
     "exampleRequest": { "username": "rogersop", "body": "This is a test comment" },
-    "exampleResponse": {
-      "comment": "This is an example response."
+    "exampleResponse":  {
+      "comment_id": 19,
+      "body": "This is a test comment",
+      "article_id": 2,
+      "author": "icellusedkars",
+      "votes": 0,
+      "created_at": "2022-02-18T12:48:32.903Z"
     }
   }
 }
