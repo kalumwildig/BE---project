@@ -1,29 +1,11 @@
 const express = require('express')
-
-const {getTopics, getArticle, patchArticle, getUsers, getArticles, getArticleComments, postComment, deleteComment, getEndpoints} = require('./controllers/controller')
 const {customError, PSQLErrors} = require('./controllers/errorcontroller')
+const apiRouter = require('./routes/apiRouter')
 
 const app = express()
+
 app.use(express.json())
-
-//GETS
-app.get('/api', getEndpoints)
-app.get('/api/topics', getTopics);
-app.get('/api/articles', getArticles);
-app.get('/api/articles/:article_id', getArticle);
-app.get('/api/users', getUsers);
-app.get('/api/articles/:article_id/comments', getArticleComments);
-
-//PATCH'S
-app.patch('/api/articles/:article_id', patchArticle);
-
-
-//DELETES
-app.delete('/api/comments/:comment_id', deleteComment)
-
-//POSTS
-app.post('/api/articles/:article_id/comments', postComment);
-
+app.use('/api', apiRouter)
 
 
 //ERRORS
