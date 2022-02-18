@@ -65,7 +65,7 @@ module.exports = [
   },
   {
     title: "They're not exactly dogs, are they?",
-    topic: "mitch",
+    topic: "cats",
     author: "butter_bridge",
     body: "Well? Think about it.",
     created_at: 1591438200000,
