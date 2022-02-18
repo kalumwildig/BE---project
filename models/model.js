@@ -71,7 +71,7 @@ exports.postCommentModel = async (data, id, author) => {
           return rows[0].body
         });
     }
-    return Promise.reject((err.code = "22P02"));
+    return Promise.reject({ status: 400, msg: "This is a bad request" });
   }
 
 exports.getEndpointsModel = async () => {
