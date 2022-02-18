@@ -274,7 +274,6 @@ describe("GET /api/articles (updated to consider queries)", () => {
             title: "They're not exactly dogs, are they?",
             topic: "cats",
             author: "butter_bridge",
-            body: "Well? Think about it.",
             created_at: "2020-06-06T09:10:00.000Z",
             votes: 0,
             comment_count: 2
@@ -283,7 +282,6 @@ describe("GET /api/articles (updated to consider queries)", () => {
             title: "UNCOVERED: catspiracy to bring down democracy",
             topic: "cats",
             author: "rogersop",
-            body: "Bastet walks amongst us, and the cats are taking arms!",
             created_at: "2020-08-03T13:14:00.000Z",
             votes: 0,
             comment_count: 2

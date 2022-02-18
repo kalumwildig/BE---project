@@ -62,11 +62,11 @@ exports.getArticlesModel = (sort_by = "created_at", order = "DESC", topic) => {
     });
   }
   
-  let query = `SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id`;
+  let query = `SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id`;
   if (topic) {
     query += ` WHERE a.topic = '${topic}'`;
   }
-  query += ` GROUP BY a.article_id ORDER BY a.${sort_by} ${order};`;
+  query += ` GROUP BY a.article_id ORDER BY ${sort_by} ${order};`;
   return db.query(query).then(({ rows }) => {
     if (rows.length === 0) {
         return Promise.reject({
