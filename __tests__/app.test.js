@@ -177,8 +177,8 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles", () => {
-  test("Status 200: Should return an array of article objects ordered by created_at desc", () => {
+describe("GET /api/articles (updated to consider queries)", () => {
+  test("Status 200: Should return an array of article objects default ordered by created_at desc, when no sort_by, order or topic are passed", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -202,7 +202,96 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test("Status 200: Should return articles that can be passed sort_by and ordered_by arguments", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", {
+          ascending: true,
+        });
+        expect(articles).toHaveLength(12);
+        articles.forEach((element) => {
+          expect(element).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+    })
+      test('Status 404: Should return an empty array when a topic is passed that does not exist', () => {
+        return request(app)
+        .get("/api/articles?sort_by=title&order=asc&topic=shouldntexist")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual('This topic does not exist')
+        }
+      );
+  });
+  test("Status 400: Responds with an error when invalid order by is passed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order argument. This is a bad request");
+      });
+  });
+  test("Status 400: Responds with an error when invalid sort by is passed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=testx&order=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Invalid sort by argument. This is a bad request"
+        );
+      });
+  });
+  test("Status 200: Should return articles with default if sort_by or order queries are misspelt etc.", () => {
+    return request(app)
+      .get("/api/articles?sor=title&ordr=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("Status 200: Should return articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc&topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(2);
+        expect(articles).toEqual([{
+            article_id: 9,
+            title: "They're not exactly dogs, are they?",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "Well? Think about it.",
+            created_at: "2020-06-06T09:10:00.000Z",
+            votes: 0,
+            comment_count: 2
+          },{
+            article_id: 5,
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            topic: "cats",
+            author: "rogersop",
+            body: "Bastet walks amongst us, and the cats are taking arms!",
+            created_at: "2020-08-03T13:14:00.000Z",
+            votes: 0,
+            comment_count: 2
+          }])
+      });
+  });
 });
+
 
 describe("GET /api/articles/:article_id/comments", () => {
   test("Status 200: Should return array of comments for the given article_id", () => {
@@ -250,6 +339,23 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('Status 204: Should delete the comment specified by ID', () => {
+        return request(app).delete("/api/comments/1").expect(204);
+    });
+    test('Status 404: Responds with an error if the comment does not already exist', () => {
+        return request(app).delete("/api/comments/1539256").expect(404).then(({ body }) => {
+            expect(body.msg).toBe("No comment exists for: 1539256");
+          });
+    });
+    test('Status 400: Responds with an error if the comment passed is not a number', () => {
+      return request(app).delete("/api/comments/notanid").expect(400).then(({ body }) => {
+          expect(body.msg).toBe("This is a bad request");
+        });
+  });
+  });
 
 describe("POST /api/articles/:article_id/comments", () => {
   test("Status 201: Should POST a comment to the comments table and then return the comment", () => {

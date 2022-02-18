@@ -5,8 +5,9 @@ const {
   getUserModel,
   getArticlesModel,
   getArticleCommentsModel,
-  postCommentModel,
   getEndpointsModel
+  deleteCommentModel,
+  postCommentModel
 } = require("../models/model");
 
 
@@ -42,12 +43,21 @@ exports.getUsers = async (req, res) => {
   res.status(200).send({ users });
 };
 
-exports.getArticles = async (req, res) => {
-  const articles = await getArticlesModel();
-  res.status(200).send({ articles });
+
+exports.getArticles = async (req, res, next) => {
+  try {
+    const sort_by = req.query.sort_by;
+    const order = req.query.order;
+    const topic = req.query.topic;
+    const articles = await getArticlesModel(sort_by, order, topic);
+    res.status(200).send({ articles });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getArticleComments = async (req, res, next) => {
+
   try {
     const id = req.params.article_id;
     const outcome = await Promise.all([getArticleModel(id), getArticleCommentsModel(id)])
@@ -57,6 +67,16 @@ exports.getArticleComments = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.deleteComment = async (req, res, next) => {
+   try { const id = req.params.comment_id
+  await deleteCommentModel(id)
+   res.sendStatus(204)
+   }
+   catch (err) {
+       next(err)
+   }
+}
 
 exports.postComment = async (req, res, next) => {
   try {

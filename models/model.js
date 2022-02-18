@@ -1,6 +1,8 @@
 const db = require("../db/connection");
-const {doRowsExist} = require("../util_funcs");
 const file = require('../endpoints.json')
+const { doRowsExist } = require("../util_funcs");
+
+
 
 exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
@@ -15,7 +17,7 @@ exports.getArticleModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      return doRowsExist(rows, id)
+      return doRowsExist(rows, id);
     });
 };
 
@@ -26,7 +28,7 @@ exports.patchArticleModel = (id, body) => {
       [body.inc_votes, id]
     )
     .then(({ rows }) => {
-        return rows[0]
+      return rows[0];
     });
 };
 
@@ -36,14 +38,45 @@ exports.getUserModel = () => {
   });
 };
 
-exports.getArticlesModel = () => {
-  return db
-    .query(
-      `SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id GROUP BY a.article_id ORDER BY a.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
+exports.getArticlesModel = (sort_by = "created_at", order = "DESC", topic) => {
+  const fieldOptions = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const orderBy = ["ASC", "DESC"];
+  if (!fieldOptions.includes(sort_by.toLowerCase())) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid sort by argument. This is a bad request",
     });
+  }
+  if (!orderBy.includes(order.toUpperCase())) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid order argument. This is a bad request",
+    });
+  }
+  
+  let query = `SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id`;
+  if (topic) {
+    query += ` WHERE a.topic = '${topic}'`;
+  }
+  query += ` GROUP BY a.article_id ORDER BY a.${sort_by} ${order};`;
+  return db.query(query).then(({ rows }) => {
+    if (rows.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: "This topic does not exist",
+          });
+    }
+    
+    return rows;
+  });
 };
 
 exports.getArticleCommentsModel = (id) => {
@@ -53,26 +86,41 @@ exports.getArticleCommentsModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-        return rows
-   });
+      return rows;
+    });
+};
+
+exports.deleteCommentModel = (id) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1`, [id])
+    .then(({ rowCount }) => {
+      if (rowCount == 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `No comment exists for: ${id}`,
+        });
+
+      }
+    });
 };
 
 exports.postCommentModel = async (data, id, author) => {
-    const check = Object.keys(data);
-    if (check[0] == "username" && check[1] == "body") {
-      const comment = data.body;
-      const insert = [comment, author, id];
-      return db
-        .query(
-          `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
-          insert
-        )
-        .then(({ rows }) => {
-          return rows[0].body
-        });
-    }
+  const check = Object.keys(data);
+  if (check[0] == "username" && check[1] == "body") {
+    const comment = data.body;
+    const insert = [comment, author, id];
+    return db
+      .query(
+        `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+        insert
+      )
+      .then(({ rows }) => {
+        return rows[0].body;
+      });
+  }
     return Promise.reject({ status: 400, msg: "This is a bad request" });
   }
+
 
 exports.getEndpointsModel = async () => {
     return file;
