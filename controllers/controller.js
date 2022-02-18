@@ -41,9 +41,17 @@ exports.getUsers = async (req, res) => {
   res.status(200).send({ users });
 };
 
-exports.getArticles = async (req, res) => {
-  const articles = await getArticlesModel();
-  res.status(200).send({ articles });
+
+exports.getArticles = async (req, res, next) => {
+  try {
+    const sort_by = req.query.sort_by;
+    const order = req.query.order;
+    const topic = req.query.topic;
+    const articles = await getArticlesModel(sort_by, order, topic);
+    res.status(200).send({ articles });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getArticleComments = async (req, res, next) => {
