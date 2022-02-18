@@ -1,6 +1,7 @@
 const db = require("../db/connection");
-const {doRowsExist,
-} = require("../util_funcs");
+
+const { doRowsExist } = require("../util_funcs");
+
 
 exports.getTopicModel = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
@@ -15,7 +16,7 @@ exports.getArticleModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      return doRowsExist(rows, id)
+      return doRowsExist(rows, id);
     });
 };
 
@@ -26,7 +27,7 @@ exports.patchArticleModel = (id, body) => {
       [body.inc_votes, id]
     )
     .then(({ rows }) => {
-        return rows[0]
+      return rows[0];
     });
 };
 
@@ -84,24 +85,36 @@ exports.getArticleCommentsModel = (id) => {
       [id]
     )
     .then(({ rows }) => {
-        return rows
-   });
+      return rows;
+    });
+};
+
+exports.deleteCommentModel = (id) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1`, [id])
+    .then(({ rowCount }) => {
+      if (rowCount == 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `No comment exists for: ${id}`,
+        });
+      }
+    });
 };
 
 exports.postCommentModel = async (data, id, author) => {
-    const check = Object.keys(data);
-    if (check[0] == "username" && check[1] == "body") {
-      const comment = data.body;
-      const insert = [comment, author, id];
-      return db
-        .query(
-          `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
-          insert
-        )
-        .then(({ rows }) => {
-          return rows[0].body
-        });
-    }
-    return Promise.reject((err.code = "22P02"));
+  const check = Object.keys(data);
+  if (check[0] == "username" && check[1] == "body") {
+    const comment = data.body;
+    const insert = [comment, author, id];
+    return db
+      .query(
+        `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+        insert
+      )
+      .then(({ rows }) => {
+        return rows[0].body;
+      });
   }
-
+  return Promise.reject((err.code = "22P02"));
+};

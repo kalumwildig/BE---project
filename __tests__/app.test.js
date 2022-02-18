@@ -340,6 +340,23 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('Status 204: Should delete the comment specified by ID', () => {
+        return request(app).delete("/api/comments/1").expect(204);
+    });
+    test('Status 404: Responds with an error if the comment does not already exist', () => {
+        return request(app).delete("/api/comments/1539256").expect(404).then(({ body }) => {
+            expect(body.msg).toBe("No comment exists for: 1539256");
+          });
+    });
+    test('Status 400: Responds with an error if the comment passed is not a number', () => {
+      return request(app).delete("/api/comments/notanid").expect(400).then(({ body }) => {
+          expect(body.msg).toBe("This is a bad request");
+        });
+  });
+  });
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("Status 201: Should POST a comment to the comments table and then return the comment", () => {
     const comment = { username: "rogersop", body: "This is a test comment" };
@@ -381,4 +398,4 @@ describe("POST /api/articles/:article_id/comments", () => {
             expect(body.msg).toBe("This is a bad request");
           });
       });
-});
+    });
