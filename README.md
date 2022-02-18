@@ -1,5 +1,9 @@
 # Northcoders News API
 
+### Host link:
+
+https://kalum-nc-new-app.herokuapp.com/api/articles
+
 
 ## Project Summary:  
 
@@ -45,6 +49,6 @@ Finally, once all the above is complete, you should then be able to run the test
 
 Minimum software version in order to run the project are:
 
-- Node.js  - 
-- Postgres -
+- Node.js  - v16.14.0
+- Postgres - 14.1
 
