@@ -5,9 +5,11 @@ const {
   getUserModel,
   getArticlesModel,
   getArticleCommentsModel,
+  getEndpointsModel,
   deleteCommentModel,
   postCommentModel
 } = require("../models/model");
+
 
 exports.getTopics = async (req, res) => {
   const topics = await getTopicModel();
@@ -87,3 +89,9 @@ exports.postComment = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getEndpoints = async (req, res) => {
+    const endpoints = await getEndpointsModel()
+    res.status(200).send({endpoints})
+
+}

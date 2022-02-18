@@ -365,7 +365,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(comment)
       .expect(201)
       .then(({ body: { comment } }) => {
-        expect(comment).toBe("This is a test comment");
+        expect(comment.body).toBe('This is a test comment');
       });
   });
   test("Status 400: Responds with an error and a message when not an id is passed", () => {
@@ -387,15 +387,26 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Article ID does not exist for: 100000394");
       });
-    });
-    test("Status 400: Responds with an error and a message when invalid data is sent via the object", () => {
-        const comment = { test1: 1, test2: 10 };
-        return request(app)
-          .post("/api/articles/2/comments")
-          .send(comment)
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("This is a bad request");
-          });
+  });
+  test("Status 400: Responds with an error and a message when invalid data is sent via the object", () => {
+    const comment = { test1: 1, test2: 10 };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("This is a bad request");
       });
-    });
+  });
+});
+
+describe("GET /api", () => {
+  test("Status 200: Should return JSON of all the potential endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(typeof endpoints).toBe('object')
+      });
+  });
+});

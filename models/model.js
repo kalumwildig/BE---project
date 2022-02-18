@@ -1,6 +1,7 @@
 const db = require("../db/connection");
-
+const file = require('../endpoints.json')
 const { doRowsExist } = require("../util_funcs");
+
 
 
 exports.getTopicModel = () => {
@@ -98,6 +99,7 @@ exports.deleteCommentModel = (id) => {
           status: 404,
           msg: `No comment exists for: ${id}`,
         });
+
       }
     });
 };
@@ -113,8 +115,13 @@ exports.postCommentModel = async (data, id, author) => {
         insert
       )
       .then(({ rows }) => {
-        return rows[0].body;
+        return rows[0];
       });
   }
-  return Promise.reject((err.code = "22P02"));
-};
+    return Promise.reject({ status: 400, msg: "This is a bad request" });
+  }
+
+
+exports.getEndpointsModel = async () => {
+    return file;
+}
