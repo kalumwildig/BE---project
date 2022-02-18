@@ -6,7 +6,14 @@ In order to do this create 2 files inside the root of this project. These files 
 
 Instruction for setup:
 
-- To install the testing requirements for local testing, run the following packages in the terminal when your are in the project directory:
-  - npm install supertest
-  - npm install jest
-  - npm install jest-sorted
+Clone Repo: 
+
+The first step is to clone this repo. In order to do this, firstly navigate in your terminal to the file you wish for this repo to be stored locally. Once you are within this directory, use the command git clone <'https link of this repo'>. Once this is complete you should be able to open this repo. 
+
+Next install dependencies:
+
+
+- To install the testing dependencies for local testing, run the following packages in the terminal when your are within the project directory:
+  - Supertest   - npm install supertest
+  - Jest        - npm install jest
+  - Jest-Sorted - npm install jest-sorted
