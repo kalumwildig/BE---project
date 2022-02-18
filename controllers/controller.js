@@ -5,7 +5,7 @@ const {
   getUserModel,
   getArticlesModel,
   getArticleCommentsModel,
-  getEndpointsModel
+  getEndpointsModel,
   deleteCommentModel,
   postCommentModel
 } = require("../models/model");
