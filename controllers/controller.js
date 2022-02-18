@@ -6,7 +6,6 @@ const {
   getArticlesModel,
   getArticleCommentsModel,
   deleteCommentModel,
-  getCommentModel,
   postCommentModel
 } = require("../models/model");
 
