@@ -7,7 +7,8 @@ const {
   getArticleCommentsModel,
   getEndpointsModel,
   deleteCommentModel,
-  postCommentModel
+  postCommentModel,
+  getUsernameModel
 } = require("../models/model");
 
 
@@ -93,5 +94,15 @@ exports.postComment = async (req, res, next) => {
 exports.getEndpoints = async (req, res) => {
     const endpoints = await getEndpointsModel()
     res.status(200).send({endpoints})
+}
 
+exports.getUsername = async (req, res, next) => {
+  try {
+    const usernameReq = req.params.username
+    const user = await getUsernameModel(usernameReq)
+    res.status(200).send({user})
+  }
+  catch (err) {
+    next(err)
+  }
 }

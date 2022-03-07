@@ -121,7 +121,12 @@ exports.postCommentModel = async (data, id, author) => {
     return Promise.reject({ status: 400, msg: "This is a bad request" });
   }
 
-
 exports.getEndpointsModel = async () => {
     return file;
+}
+
+exports.getUsernameModel = (username) => {
+  return db.query(`SELECT * FROM users WHERE username = $1`, [username]).then(({rows}) => {
+    return rows[0]
+  })
 }
