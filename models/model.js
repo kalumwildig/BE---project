@@ -104,10 +104,11 @@ exports.deleteCommentModel = (id) => {
     });
 };
 
-exports.postCommentModel = async (data, id, author) => {
+exports.postCommentModel = async (data, id) => {
   const check = Object.keys(data);
   if (check[0] == "username" && check[1] == "body") {
     const comment = data.body;
+    const author = data.username;
     const insert = [comment, author, id];
     return db
       .query(

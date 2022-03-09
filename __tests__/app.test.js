@@ -409,7 +409,7 @@ describe("GET /api", () => {
   });
 });
 
-describe.only("GET /api/user/:username", () => {
+describe("GET /api/user/:username", () => {
   test('Status 200: Should return username object of the username specified', () => {
     return request(app)
       .get("/api/users/rogersop")

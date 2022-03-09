@@ -83,8 +83,8 @@ exports.postComment = async (req, res, next) => {
   try {
     const commentToAdd = req.body;
     const id = req.params.article_id;
-    const {author} = await getArticleModel(id)
-    const comment = await postCommentModel(commentToAdd, id, author)
+    const idExist = await getArticleModel(id)
+    const comment = await postCommentModel(commentToAdd, id)
     res.status(201).send({comment})
   } catch (err) {
     next(err);
