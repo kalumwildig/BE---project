@@ -409,7 +409,7 @@ describe("GET /api", () => {
   });
 });
 
-describe("GET /api/user/:username", () => {
+describe.only("GET /api/user/:username", () => {
   test('Status 200: Should return username object of the username specified', () => {
     return request(app)
       .get("/api/users/rogersop")
@@ -421,5 +421,13 @@ describe("GET /api/user/:username", () => {
           avatar_url: 'https://avatars2.githubusercontent.com/u/24394918?s=400&v=4'
         })
       });
+  });
+  test('Status 404: Should return username object of the username specified', () => {
+    return request(app)
+      .get("/api/users/blah")
+      .expect(404)
+      .then(({ body }) => {
+          expect(body.msg).toBe("This user does not exist");
+        });
   });
 })
